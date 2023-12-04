@@ -3,6 +3,7 @@ package org.launchcode.techjobs.persistent.controllers;
 import jakarta.validation.Valid;
 import org.launchcode.techjobs.persistent.models.Employer;
 import org.launchcode.techjobs.persistent.models.Job;
+import org.launchcode.techjobs.persistent.models.Skill;
 import org.launchcode.techjobs.persistent.models.data.EmployerRepository;
 import org.launchcode.techjobs.persistent.models.data.JobRepository;
 import org.launchcode.techjobs.persistent.models.data.SkillRepository;
@@ -46,7 +47,7 @@ public class HomeController {
 
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam int employerId) {
+                                       Errors errors, Model model, @RequestParam int employerId, @RequestParam List<Integer> skills) {
 
         if (errors.hasErrors()) {
 	    model.addAttribute("title", "Add Job");
@@ -55,6 +56,8 @@ public class HomeController {
              //if employer already exists in database, set employerId for this new job, otherwise, create new employer object, which will create the ID for employer
                 Employer employer = employerRepository.findById(employerId).orElse(new Employer());
                 newJob.setEmployer(employer);
+                List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+                newJob.setSkills(skillObjs);
                 //create an Employer employer object
                 jobRepository.save(newJob); //new job instance off new job class-setEmployer(EmployerObject) then save
             }
